@@ -1,0 +1,6 @@
+###### Requirements without Version Specifiers ######
+opencv-python
+scikit-image
+imutils
+
+###### Requirements with Version Specifiers ######
