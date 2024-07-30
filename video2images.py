@@ -123,6 +123,7 @@ def extract_frames(video_path, overlap_fraction):
             ret, frame = cap.read()
             if not ret:
                 break
+            count += 1
 
             # Quality checks
             if not is_image_sharp(frame, threshold=100.0):
@@ -147,7 +148,6 @@ def extract_frames(video_path, overlap_fraction):
             )
 
             prev_frame = frame
-            count += 1
 
     finally:
         cap.release()
