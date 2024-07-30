@@ -1,7 +1,6 @@
 # Python module index
 import argparse
 import logging
-import os
 import shutil
 
 from pathlib import Path
