@@ -1,0 +1,47 @@
+{
+    // files
+    "files.trimTrailingWhitespace": true,
+    "files.trimFinalNewlines": true,
+    "files.insertFinalNewline": true,
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.benchmarks": true,
+        "**/.git": true,
+        "**/.mypy_cache": true,
+        "**/.pytest_cache": true,
+        "**/.ruff_cache": true,
+        "**/.venv": true,
+    },
+    // editor
+    "editor.tabSize": 4,
+    "editor.renderWhitespace": "trailing",
+    "editor.suggestSelection": "first",
+    "editor.bracketPairColorization.enabled": false,
+    "editor.insertSpaces": true,
+    "editor.rulers": [
+        80
+    ],
+    // python
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "ms-python.black-formatter",
+    },
+    "python.languageServer": "Pylance",
+    "python.analysis.extraPaths": [".venv/Scripts/python.exe"],
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportInvalidTypeForm": "none"
+    },
+    "python.analysis.autoFormatStrings": true,
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    // markdown
+    "markdown.validate.enabled": true,
+    "[markdown]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "yzhang.markdown-all-in-one",
+        "editor.wordWrap": "wordWrapColumn",
+    },
+}
