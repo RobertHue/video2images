@@ -51,9 +51,11 @@ def calculate_overlap(image1, image2, overlap_fraction=0.6):
     :param overlap_fraction: Fraction of overlap required between images.
     :return: True if the overlap is greater than or equal to the specified fraction.
     """
+    gray_scale1 = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
+    gray_scale2 = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
     orb = cv2.ORB_create()
-    kp1, des1 = orb.detectAndCompute(image1, None)
-    kp2, des2 = orb.detectAndCompute(image2, None)
+    kp1, des1 = orb.detectAndCompute(gray_scale1, None)
+    _, des2 = orb.detectAndCompute(gray_scale2, None)
     bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
     matches = bf.match(des1, des2)
     good_matches = [m for m in matches if m.distance < GOOD_MATCH_DISTANCE_THRESHOLD]
