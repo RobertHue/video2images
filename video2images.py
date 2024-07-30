@@ -10,8 +10,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from skimage.metrics import structural_similarity as ssim
-
+# Constants
+GOOD_MATCH_DISTANCE_THRESHOLD = 30  # Threshold for determining a good match
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -31,18 +31,26 @@ def is_image_well_exposed(image, low_threshold=0.1, high_threshold=0.9):
     hist = hist / hist.sum()
     cdf = np.cumsum(hist)
     return (cdf[0] > low_threshold) and (cdf[-1] < high_threshold)
+
+def calculate_overlap(image1, image2, overlap_fraction=0.6):
+    """
+    Calculate the overlap percentage between two images using ORB feature matching.
     
-    
-# Checks for geometric consistency using feature matching
-def has_good_feature_match(image1, image2, min_matches=10):
+    :param image1: First input image in BGR format.
+    :param image2: Second input image in BGR format.
+    :param overlap_fraction: Fraction of overlap required between images.
+    :return: True if the overlap is greater than or equal to the specified fraction.
+    """
     orb = cv2.ORB_create()
     kp1, des1 = orb.detectAndCompute(image1, None)
     kp2, des2 = orb.detectAndCompute(image2, None)
     bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
     matches = bf.match(des1, des2)
-    # logging.info(f"len(matches): {len(matches)}")
-    return len(matches) > min_matches
-
+    good_matches = [m for m in matches if m.distance < GOOD_MATCH_DISTANCE_THRESHOLD]
+    if len(kp1) == 0:
+        return False
+    overlap_percentage = len(good_matches) / len(kp1)
+    return overlap_percentage >= overlap_fraction
 
 def clear_output_directory(directory_path):
     if directory_path.exists():
@@ -56,11 +64,7 @@ def clear_output_directory(directory_path):
     else:
         logging.info(f"Output directory does not exist. Creating new one: {directory_path}")
 
-
-# Extract frames from a video until reaching the desired frame count
-def extract_frames(video_path):
-
-    # Create an output folder with a name corresponding to the video
+def extract_frames(video_path, overlap_fraction):
     path_obj = Path(video_path)
     directory_path = path_obj.parent
     video_file_name = path_obj.stem
@@ -95,9 +99,17 @@ def extract_frames(video_path):
             if not is_image_sharp(frame, threshold=100.0):
                 logging.debug(f"Frame {count} is not sharp; hence too blurry. Skipping...")
                 continue
-            if prev_frame is not None and has_good_feature_match(prev_frame, frame, min_matches=200):
-                logging.warning(f"Frame {count} does have good feature matches and therefore is too similar. Skipping...")
-                continue 
+
+            if not is_image_well_exposed(frame):
+                logging.debug(f"Frame {count} is not well exposed; hence too dark or too bright. Skipping...")
+                continue
+
+            if prev_frame is not None:
+                if calculate_overlap(prev_frame, frame, overlap_fraction):
+                    logging.info(f"Frame {count} overlaps with previous frame by at least {overlap_fraction*100}%. Saving...")
+                else:
+                    logging.warning(f"Frame {count} does not overlap with previous frame by at least {overlap_fraction*100}%. Skipping...")
+                    continue
 
             # Save frame as image
             output_file = output_directory / f"frame_{count:04d}.jpg"
@@ -119,9 +131,10 @@ def extract_frames(video_path):
 def main():
     parser = argparse.ArgumentParser(description="Split video into images")
     parser.add_argument("video_path", type=str, help="Path to the video file")
+    parser.add_argument("--overlap_fraction", type=float, default=0.6, help="Minimum overlap fraction between frames")
     args = parser.parse_args()
 
-    extract_frames(args.video_path)
+    extract_frames(args.video_path, args.overlap_fraction)
 
 if __name__ == "__main__":
     main()
