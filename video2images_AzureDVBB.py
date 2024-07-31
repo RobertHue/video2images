@@ -13,11 +13,32 @@ from skimage.measure import ransac
 from skimage.transform import FundamentalMatrixTransform
 import os
 from pathlib import Path
-
+import pprint
 #standard libs
 import time
 import random
 import itertools
+
+from skimage.feature import match_descriptors, ORB
+from skimage.measure import ransac
+from skimage.transform import FundamentalMatrixTransform
+import numpy as np
+from numba import jit
+
+from dask.distributed import Client
+import logging
+
+# Basic configuration for the root logger
+logging.basicConfig(
+    level=logging.DEBUG,  # Set default level for root logger
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('logging.log'),  # File handler
+        logging.StreamHandler()  # Console handler
+    ]
+)
+
+
 
 # due to bugs in scikit-video with opening and reading files
 # resorted to using OpenCV for reading frames
@@ -71,11 +92,15 @@ class VideoFile_p:
                 cv2.imwrite(filename, frame)
 
 
-from skimage.feature import match_descriptors, ORB
-from skimage.measure import ransac
-from skimage.transform import FundamentalMatrixTransform
-import numpy as np
-from numba import jit
+def save_frame(frame, filename):
+    if frame is not None:
+        # Convert from BGR to RGB (OpenCV uses BGR by default)
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        # Save the image
+        cv2.imwrite(filename, frame_rgb)
+    else:
+        print("Failed to capture frame")
+
 
 class Analysis_p:
 
@@ -114,7 +139,8 @@ class Analysis_p:
             try:
                 for i, k in enumerate(keypoints_o, start=0):
                     keypoints[i] = k.pt
-            except:
+            except Exception as e:
+                logging.error(f"Error during enumerate: {e}")
                 keypoints = None # if something goes catastrophically wrong
 
         #cannot pickle openCV keypoint objects unfortunately, need to convert to coords (x,y aray)
@@ -141,11 +167,20 @@ class Analysis_p:
 
                 # only the number of inliers matter to us
                 inliers_sum = inliers.sum()
-                #inliers_sum = len(matches)
 
-            except:
+            except Exception as e:
                 # just show raw matches if RANSAC errors out
+                # print(f"Error during RANSAC: {e}")
+                logging.error(f"Error during RANSAC: {e}")
                 inliers_sum = len(matches)
+                try:
+                    pretty_frame1 = pprint.pformat(frame1)
+                    logging.info(f"Pretty-Printed frame1:\n{pretty_frame1}")
+                    logging.info(f"{frame1['blur']=}")
+                    save_frame(frame1['blur'], "frame1.png")
+                    save_frame(frame2['blur'], "frame2.png")
+                except Exception as e2:
+                    logging.error(f"Error during save_frame: {e2}")
 
             finally:
                 return inliers_sum
