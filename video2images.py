@@ -10,18 +10,22 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 # Constants
 GOOD_MATCH_DISTANCE_THRESHOLD = 200  # Threshold for determining a good match
+
 
 # Basic configuration for the root logger
 logging.basicConfig(
     level=logging.DEBUG,  # Set default level for root logger
     format='%(asctime)s - %(levelname)s - %(message)s',
+    filemode='w',         # Use 'w' to overwrite the log file each time
     handlers=[
         logging.FileHandler('logging.log'),  # File handler
         logging.StreamHandler()  # Console handler
     ]
 )
+
 
 def is_image_sharp(image, threshold=50.0):
     """

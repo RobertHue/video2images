@@ -28,16 +28,17 @@ from numba import jit
 from dask.distributed import Client
 import logging
 
+
 # Basic configuration for the root logger
 logging.basicConfig(
     level=logging.DEBUG,  # Set default level for root logger
     format='%(asctime)s - %(levelname)s - %(message)s',
+    filemode='w',         # Use 'w' to overwrite the log file each time
     handlers=[
         logging.FileHandler('logging.log'),  # File handler
         logging.StreamHandler()  # Console handler
     ]
 )
-
 
 
 # due to bugs in scikit-video with opening and reading files
