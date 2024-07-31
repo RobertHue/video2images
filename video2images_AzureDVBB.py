@@ -19,6 +19,7 @@ import numpy as np # yep
 import skimage # scikit-image for loaded image analysis
 
 from dask.distributed import Client
+from itertools import repeat, islice
 from numba import jit
 from skimage.feature import match_descriptors, ORB
 from skimage.measure import ransac
@@ -139,6 +140,8 @@ class Analysis_p:
                 logging.error(f"Error during enumerate: {e}")
                 keypoints = None # if something goes catastrophically wrong
 
+        logging.info(f"frame {frame['index']} has blur val of: {blur}")
+
         #cannot pickle openCV keypoint objects unfortunately, need to convert to coords (x,y aray)
         return {'raw_frame': frame['raw_frame'], 'index': frame['index'], 'blur': blur,
                 'keypoints': keypoints, 'descriptors': descriptors}
@@ -214,9 +217,22 @@ class FrameSelection_p:
 
     def compute_best_frames(frame_stream, last_frame_index, client,
                             batch_size=10, min_variance=0.05):
+        """
+        Identify the best frames from a stream of video frames.
 
-        from itertools import repeat, islice
+        Args:
+            frame_stream (iterable): Stream of video frames to process.
+            last_frame_index (int): Index of the last frame to process.
+            client (object): Client used to submit analysis tasks.
+            batch_size (int, optional): Number of frames to process in each batch. Default is 10.
+            min_variance (float, optional): Minimum variance threshold for frame selection. Default is 0.05.
 
+        Returns:
+            list: Indices of the selected best frames.
+
+        The function processes frames in batches, computes keypoints and descriptors,
+        matches them against a base frame, and selects the best frames based on variance criteria.
+        """
         last_frame_index = last_frame_index-1 # removes infinite loop bug
         frame_generator = itertools.islice(frame_stream, last_frame_index)
         base_descriptor = None
@@ -226,7 +242,6 @@ class FrameSelection_p:
         matches_to_base_frame = []
         good_frame_indexes = [1]   # include first frame
         last_batch = False
-
 
         while True:
 
@@ -286,7 +301,8 @@ class FrameSelection_p:
                 # if not found then repeat
                 batch_num += 1
 
-        # repeat untill input frames are exhausted
+        # repeat until input frames are exhausted
+        logging.info(f"Good Frames so far: {good_frame_indexes}")
 
         return good_frame_indexes # finished
 
@@ -308,10 +324,9 @@ def main():
     directory_path = path_obj.parent
 
     vid_stream = VideoFile_p(args.video_path)
-    #slc = itertools.islice(vid_stream, 2000)
-    good = FrameSelection_p.compute_best_frames(vid_stream, vid_stream.number_of_frames, client,
+    good_frame_indexes = FrameSelection_p.compute_best_frames(vid_stream, vid_stream.number_of_frames, client,
                                                 min_variance=0.08, batch_size=20)
-    vid_stream.save_frames(good, directory_path / "selected_images")
+    vid_stream.save_frames(good_frame_indexes, directory_path / "selected_images")
 
 
 if __name__ == "__main__":
