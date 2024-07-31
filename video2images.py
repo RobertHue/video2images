@@ -14,6 +14,11 @@ import matplotlib.pyplot as plt
 from dask import bag as db
 from dask import compute, delayed
 from dask.distributed import Client, LocalCluster
+from numba import jit
+from skimage.feature import match_descriptors, ORB
+from skimage.measure import ransac
+from skimage.transform import FundamentalMatrixTransform
+
 
 # Constants
 GOOD_MATCH_DISTANCE_THRESHOLD = 200  # Threshold for determining a good match
@@ -91,11 +96,6 @@ class VideoFile:
             # cv2 opens in bgr mode and needs to be converted to RGB
             return {'index': self.current_index, 'raw_frame': cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)}
 
-from skimage.feature import match_descriptors, ORB
-from skimage.measure import ransac
-from skimage.transform import FundamentalMatrixTransform
-
-from numba import jit
 class Analysis:
 
     @staticmethod
