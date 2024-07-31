@@ -140,8 +140,6 @@ class Analysis_p:
                 logging.error(f"Error during enumerate: {e}")
                 keypoints = None # if something goes catastrophically wrong
 
-        logging.info(f"frame {frame['index']} has blur val of: {blur}")
-
         #cannot pickle openCV keypoint objects unfortunately, need to convert to coords (x,y aray)
         return {'raw_frame': frame['raw_frame'], 'index': frame['index'], 'blur': blur,
                 'keypoints': keypoints, 'descriptors': descriptors}
@@ -216,7 +214,7 @@ class FrameSelection_p:
         return None # too much variance in dataset
 
     def compute_best_frames(frame_stream, last_frame_index, client,
-                            batch_size=10, min_variance=0.05):
+                            batch_size=10, min_variance=0.05, blur_threshold=100.0):
         """
         Identify the best frames from a stream of video frames.
 
@@ -226,6 +224,7 @@ class FrameSelection_p:
             client (object): Client used to submit analysis tasks.
             batch_size (int, optional): Number of frames to process in each batch. Default is 10.
             min_variance (float, optional): Minimum variance threshold for frame selection. Default is 0.05.
+            blur_threshold (float, optional): Minimum blur threshold for frame selection. Default is 100.0.
 
         Returns:
             list: Indices of the selected best frames.
@@ -267,6 +266,10 @@ class FrameSelection_p:
                                     batch_size * batch_num - len(descriptor_collection)):
                     future = client.submit(Analysis_p.compute_keypoints_descriptors_blur, frame)
                     descriptor_collection.append(future)
+
+
+            # Filter frames based on blur threshold
+            descriptor_collection = [f for f in descriptor_collection if f.result()['blur'] >= blur_threshold]
 
             # match all elements in the collection against base
             for frame_future in islice(descriptor_collection,
