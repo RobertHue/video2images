@@ -140,6 +140,8 @@ class Analysis_p:
                 logging.error(f"Error during enumerate: {e}")
                 keypoints = None # if something goes catastrophically wrong
 
+        logging.info(f"frame {frame['index']} has blur val of: {blur}")
+
         #cannot pickle openCV keypoint objects unfortunately, need to convert to coords (x,y aray)
         return {'raw_frame': frame['raw_frame'], 'index': frame['index'], 'blur': blur,
                 'keypoints': keypoints, 'descriptors': descriptors}
@@ -204,7 +206,6 @@ class FrameSelection_p:
                 new = old
             else:
                 old = new
-                #new = sum(matches_to_base_frame[:i])/(i+1)
                 new = matches_to_base_frame[i]
                 variance = abs(new - old) / old
 
@@ -262,11 +263,20 @@ class FrameSelection_p:
                         descriptor_collection.append(future)
 
             else:
-                for frame in islice(frame_generator,
-                                    batch_size * batch_num - len(descriptor_collection)):
-                    future = client.submit(Analysis_p.compute_keypoints_descriptors_blur, frame)
-                    descriptor_collection.append(future)
-
+                try:
+                    for frame in islice(frame_generator,
+                                        batch_size * batch_num - len(descriptor_collection)):
+                        future = client.submit(Analysis_p.compute_keypoints_descriptors_blur, frame)
+                        descriptor_collection.append(future)
+                except Exception as e:
+                    logging.info(f"error: {e}")
+                    logging.info(f"frame-gen: {frame_generator}")
+                    logging.info(f"batch_size: {batch_size}")
+                    logging.info(f"batch_num: {batch_num}")
+                    logging.info(f"descriptor_collection: {len(descriptor_collection)}")
+                    logging.info(f"calc: {batch_size * batch_num - len(descriptor_collection)}")
+                    # re-raise
+                    raise e
 
             # Filter frames based on blur threshold
             descriptor_collection = [f for f in descriptor_collection if f.result()['blur'] >= blur_threshold]
