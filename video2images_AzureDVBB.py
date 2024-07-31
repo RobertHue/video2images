@@ -33,9 +33,8 @@ import logging
 logging.basicConfig(
     level=logging.DEBUG,  # Set default level for root logger
     format='%(asctime)s - %(levelname)s - %(message)s',
-    filemode='w',         # Use 'w' to overwrite the log file each time
     handlers=[
-        logging.FileHandler('logging.log'),  # File handler
+        logging.FileHandler('logging.log', mode='w'),  # File handler
         logging.StreamHandler()  # Console handler
     ]
 )
@@ -125,7 +124,7 @@ class Analysis_p:
             keypoints = orb.keypoints
             descriptors = orb.descriptors
 
-            return {'index': frame['index'], 'blur': blur,
+            return {'raw_frame': frame['raw_frame'], 'index': frame['index'], 'blur': blur,
                     'keypoints': keypoints, 'descriptors': descriptors}
 
         else:
@@ -145,7 +144,7 @@ class Analysis_p:
                 keypoints = None # if something goes catastrophically wrong
 
         #cannot pickle openCV keypoint objects unfortunately, need to convert to coords (x,y aray)
-        return {'index': frame['index'], 'blur': blur,
+        return {'raw_frame': frame['raw_frame'], 'index': frame['index'], 'blur': blur,
                 'keypoints': keypoints, 'descriptors': descriptors}
 
 
@@ -174,14 +173,15 @@ class Analysis_p:
                 # print(f"Error during RANSAC: {e}")
                 logging.error(f"Error during RANSAC: {e}")
                 inliers_sum = len(matches)
-                try:
-                    pretty_frame1 = pprint.pformat(frame1)
-                    logging.info(f"Pretty-Printed frame1:\n{pretty_frame1}")
-                    logging.info(f"{frame1['blur']=}")
-                    save_frame(frame1['blur'], "frame1.png")
-                    save_frame(frame2['blur'], "frame2.png")
-                except Exception as e2:
-                    logging.error(f"Error during save_frame: {e2}")
+                # try:
+                #     # pretty_frame1 = pprint.pformat(frame1)
+                #     # logging.info(f"Pretty-Printed frame1:\n{pretty_frame1}")
+                #     logging.info(f"{frame1['raw_frame']=}")
+                #     save_frame(frame1['raw_frame'], "frame1.png")
+                #     save_frame(frame2['raw_frame'], "frame2.png")
+
+                # except Exception as e2:
+                #     logging.error(f"Error during save_frame: {e2}")
 
             finally:
                 return inliers_sum

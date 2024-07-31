@@ -21,7 +21,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     filemode='w',         # Use 'w' to overwrite the log file each time
     handlers=[
-        logging.FileHandler('logging.log'),  # File handler
+        logging.FileHandler('logging.log', mode='w'),  # File handler
         logging.StreamHandler()  # Console handler
     ]
 )
