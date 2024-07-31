@@ -1,32 +1,28 @@
-# -*- coding: utf-8 -*-
-
 # look into 'streamz' package, neat pipelining with dask integration
-import argparse
-import cv2 # opencv-python for frame reading
-import skimage # scikit-image for loaded image analysis
-import dask # parallelized python EZ mode
-import numpy as np # yep
-import matplotlib.pyplot as plt # pretty charts no?
-import matplotlib
-from skimage.feature import match_descriptors, ORB
-from skimage.measure import ransac
-from skimage.transform import FundamentalMatrixTransform
-import os
-from pathlib import Path
-import pprint
-#standard libs
-import time
-import random
-import itertools
 
-from skimage.feature import match_descriptors, ORB
-from skimage.measure import ransac
-from skimage.transform import FundamentalMatrixTransform
-import numpy as np
-from numba import jit
+# Python Module Index
+import argparse
+import itertools
+import logging
+import os
+import pprint
+import random
+import time
+
+from pathlib import Path
+
+# 3rd-Party
+import cv2 # opencv-python for frame reading
+import dask # parallelized python EZ mode
+import matplotlib.pyplot as plt # pretty charts no?
+import numpy as np # yep
+import skimage # scikit-image for loaded image analysis
 
 from dask.distributed import Client
-import logging
+from numba import jit
+from skimage.feature import match_descriptors, ORB
+from skimage.measure import ransac
+from skimage.transform import FundamentalMatrixTransform
 
 
 # Basic configuration for the root logger
@@ -150,6 +146,19 @@ class Analysis_p:
 
     @staticmethod
     def match_frames(frame1, frame2, minsamples=8, maxtrials=100, opencv=False):
+        """
+        Match keypoints between two image frames and count inliers.
+
+        Parameters:
+        - frame1 (dict): The first frame containing 'keypoints' and 'descriptors'.
+        - frame2 (dict): The second frame containing 'keypoints' and 'descriptors'.
+        - minsamples (int): Minimum samples for RANSAC. Default is 8.
+        - maxtrials (int): Maximum trials for RANSAC. Default is 100.
+        - opencv (bool): Flag to use OpenCV instead of skimage. Default is False.
+
+        Returns:
+        - int: Number of inliers after RANSAC filtering.
+        """
         if opencv is False:
             # skimage has nicer matching then opencv
             # modified boilerplate example code from doc of skimage
@@ -170,18 +179,7 @@ class Analysis_p:
 
             except Exception as e:
                 # just show raw matches if RANSAC errors out
-                # print(f"Error during RANSAC: {e}")
-                logging.error(f"Error during RANSAC: {e}")
                 inliers_sum = len(matches)
-                # try:
-                #     # pretty_frame1 = pprint.pformat(frame1)
-                #     # logging.info(f"Pretty-Printed frame1:\n{pretty_frame1}")
-                #     logging.info(f"{frame1['raw_frame']=}")
-                #     save_frame(frame1['raw_frame'], "frame1.png")
-                #     save_frame(frame2['raw_frame'], "frame2.png")
-
-                # except Exception as e2:
-                #     logging.error(f"Error during save_frame: {e2}")
 
             finally:
                 return inliers_sum

@@ -1,31 +1,148 @@
-# Python module index
+# Python Module Index
 import argparse
 import logging
 import shutil
+import skimage # scikit-image for loaded image analysis
 
 from pathlib import Path
 
-# 3rd party
+# 3rd-Party
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
+from dask import bag as db
+from dask import compute, delayed
+from dask.distributed import Client, LocalCluster
 
 # Constants
 GOOD_MATCH_DISTANCE_THRESHOLD = 200  # Threshold for determining a good match
 
 
+
 # Basic configuration for the root logger
 logging.basicConfig(
-    level=logging.DEBUG,  # Set default level for root logger
+    level=logging.INFO,  # Set default level for root logger
     format='%(asctime)s - %(levelname)s - %(message)s',
-    filemode='w',         # Use 'w' to overwrite the log file each time
     handlers=[
         logging.FileHandler('logging.log', mode='w'),  # File handler
         logging.StreamHandler()  # Console handler
     ]
 )
 
+def save_frame(frame, filename):
+    if frame is not None:
+        # Convert from BGR to RGB (OpenCV uses BGR by default)
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        # Save the image
+        cv2.imwrite(filename, frame_rgb)
+    else:
+        print("Failed to capture frame")
+
+
+
+
+class Frame:
+
+    __slots__ = ['index', 'blur', 'raw_frame', 'keypoints', 'descriptors', 'inlier_matches_num']
+
+    def __init__(self, index=None, raw_frame=None, blur=None, keypoints=None, descriptors=None):
+        self.index = index
+        self.blur = blur
+        self.raw_frame = raw_frame
+        self.keypoints = keypoints
+        self.descriptors = descriptors
+        self.inlier_matches_num = {}
+
+
+
+# due to bugs in scikit-video with opening and reading files
+# resorted to using OpenCV for reading frames
+
+class VideoFile:
+
+    def __init__(self, file):
+        self.file = file
+        # look at opencv documentation: Flags for video I/O
+        # the cv2 properties did not function properly,
+        # passing the integer value of the flag did
+        self.capture = cv2.VideoCapture(self.file)
+        self.number_of_frames = int(self.capture.get(7))
+        self.capture = None
+        self.current_index = None
+
+    def __len__(self):
+        return self.number_of_frames
+
+    def __iter__(self):
+        self.current_index = 0
+        self.capture = cv2.VideoCapture(self.file)
+        self.number_of_frames = int(self.capture.get(7))
+        return self
+
+    def __next__(self):
+        self.current_index += 1
+        ret, frame = self.capture.read() # ret is false at EOF
+        if ret is False:
+            self.current_index = None
+            self.capture = None
+            raise StopIteration
+        elif ret is True:
+            # cv2 opens in bgr mode and needs to be converted to RGB
+            return {'index': self.current_index, 'raw_frame': cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)}
+
+from skimage.feature import match_descriptors, ORB
+from skimage.measure import ransac
+from skimage.transform import FundamentalMatrixTransform
+
+from numba import jit
+class Analysis:
+
+    @staticmethod
+    def compute_keypoints_descriptors_blur(frame, n_keypoints = 500):
+        # using opencv to reduce dependencies needed
+        # estimate blur by taking the image's laplacian vairance (blurry=low)
+        blur = cv2.Laplacian(frame['raw_frame'], cv2.CV_64F).var()
+
+        # skimage has poor detection speed, 10x slower as of writing this
+        # keeping it here if in the future its better
+
+        orb = skimage.feature.ORB(n_keypoints = n_keypoints, downscale=2)
+        # skimage ORB needs grayscale image
+        orb.detect_and_extract(skimage.color.rgb2gray(frame['raw_frame']))
+        keypoints = orb.keypoints
+        descriptors = orb.descriptors
+
+        return {'index': frame['index'], 'blur': blur,
+                'keypoints': keypoints, 'descriptors': descriptors}
+        """
+        # boilerplate from opencv python reference
+        orb = cv2.ORB_create(nfeatures = n_keypoints) # Initiate ORB detector
+        keypoints = orb.detect(frame['raw_frame'], None)
+        keypoints, descriptors = orb.compute(frame['raw_frame'], keypoints)
+        """
+        # cannot pickle openCV keypoint objects unfortunately
+        return {'index': frame['index'], 'blur': blur, 'descriptors': descriptors}
+
+    @staticmethod
+    def match_descriptors(descriptors1, descriptors2,
+                          minsamples=8, maxtrials=500):
+        # skimage has nicer matching then opencv
+        # modified boilerplate example code from doc of skimage
+        matches = match_descriptors(descriptors1, descriptors2,
+                                    cross_check = True)
+        # filtering out outliers, note first return is 'model', we dont care
+        _, inliers = ransac((frame1.keypoints[matches[:, 0]],
+                            frame2.keypoints[matches[:, 1]]),
+                            FundamentalMatrixTransform,
+                            min_samples = minsamples,
+                            residual_threshold = 1, max_trials = maxtrials)
+
+        # only the number of inliers matter to us
+        inliers_sum = inliers.sum()
+        return inliers_sum
+
+################################################################################
 
 def is_image_sharp(image, threshold=50.0):
     """
@@ -195,6 +312,8 @@ def extract_frames(video_path):
         cv2.destroyAllWindows()
         logging.info(f"Total frames extracted: {count}")
 
+################################################################################
+
 
 def main():
     """
@@ -204,7 +323,39 @@ def main():
     parser.add_argument("video_path", type=str, help="Path to the video file")
     args = parser.parse_args()
 
-    extract_frames(args.video_path)
+    f = VideoFile(args.video_path)
+    gen = iter(f) # get generator object basically
+    # plt.imshow(next(gen)['raw_frame'])
+
+    # test if analysis works
+    a = Analysis.compute_keypoints_descriptors_blur
+    m = Analysis.match_descriptors
+    frame = next(f)
+    res = a(frame)
+    print(res)
+
+    cluster = LocalCluster(n_workers=2)
+    client = Client(cluster)
+    client
+
+    #reset workers/clear RAM
+    cluster.scale_down(cluster.workers)
+    cluster.scale_up(2)
+
+    from queue import Queue
+
+    # pipeline setup
+    # Note: if input data is big, and the input_q.put() is blocking code execution
+    # in main thread, have the input_q be as little as possible IF the input
+    # data is generated constantly and faster then it is consumed
+    # Observation: input_q is sent to remote_q only when remote_q has been consumed
+    input_q = Queue(maxsize=20) # input queue stored on local machine
+    remote_q = client.scatter(input_q, maxsize=1) # queue on cluster for each worker
+    calc_q = client.map(Analysis.compute_keypoints_descriptors_blur,
+                        remote_q, maxsize = 1)
+    output_q = client.gather(calc_q, maxsize = 5)
+
+    # extract_frames(args.video_path)
 
 
 if __name__ == "__main__":
