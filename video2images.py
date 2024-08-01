@@ -1,7 +1,6 @@
 # Python Module Index
 import argparse
 import logging
-
 from pathlib import Path
 
 # 3rd-Party
