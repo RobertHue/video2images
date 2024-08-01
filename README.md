@@ -1,10 +1,28 @@
 # video2images
 
-Converts a video into images filtered for photogrammetry.
+Converts a video into images filtered for [Photogrammetry](https://en.wikipedia.org/wiki/Photogrammetry), such as in [Meshroom](https://github.com/alicevision/Meshroom).
+
+This project aligns with the goals and motivation outlined in [Photogrammetry Datasets from Video - A Slightly Less Naive Approach](https://gist.github.com/AzureDVBB/49f5240faedc421e7c3939567eaddb59).
+
+## Goal of This Project
+
+Provide an easy-to-use collection of scripts to:
+
+- Ingest video files
+- Analyze them for optimal frames
+- Save those frames as a sequence of image files suitable for mainstream photogrammetry software
+
+The project aims to:
+
+- **Reduce on-site time** needed for data capture
+- **Minimize the number of input images** by selecting the best frames while maintaining a consistent amount of overlap between them
+- **Ensure the least blurry frames** are used
+
 
 ## Table of Contents
 
 - [video2images](#video2images)
+  - [Goal of This Project](#goal-of-this-project)
   - [Table of Contents](#table-of-contents)
   - [Getting Started](#getting-started)
     - [Installation Prerequisites](#installation-prerequisites)
