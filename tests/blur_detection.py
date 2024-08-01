@@ -1,7 +1,9 @@
-# import the necessary packages
-from imutils import paths
+# Python Module Index
 import argparse
+
+# 3rd-Party
 import cv2
+from imutils import paths
 
 
 def variance_of_laplacian(image):
