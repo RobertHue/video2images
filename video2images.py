@@ -80,7 +80,7 @@ def extract_frames(
                 break
             count += 1
 
-            # 3.1 Blurriness Check: Filters out frames that are too blurry
+            # i. Blurriness Check: Filters out frames that are too blurry
             blur = get_laplacian_variance(frame)
             if blur >= blur_threshold:
                 logging.warning(
@@ -90,7 +90,7 @@ def extract_frames(
                 )
                 continue
 
-            # 3.2 Overlap Check: Filters out consecutive frames that do not meet
+            # ii. Overlap Check: Filters out consecutive frames that do not meet
             #                    the required geometric overlap
             if (
                 prev_frame is not None
