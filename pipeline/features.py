@@ -42,7 +42,7 @@ def is_well_exposed(image, low_threshold=0.1, high_threshold=0.9):
     return (cdf[0] > low_threshold) and (cdf[-1] < high_threshold)
 
 
-def get_feature_match_ratio(image1, image2, good_match_distance = 30.0):
+def get_feature_match_ratio(image1, image2, good_match_distance=30.0):
     """
     Determine the ratio of good keypoint matches between two images using ORB feature matching.
 
