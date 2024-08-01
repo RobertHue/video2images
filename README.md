@@ -1,6 +1,6 @@
 # video2images
 
-![Python](https://img.shields.io/badge/python-3.10+-blue)
+![Python](https://img.shields.io/badge/python-3.12+-blue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://github.com/RobertHue/video2images/actions/workflows/ci-test.yml/badge.svg?branch=master)](https://github.com/RobertHue/video2images/actions/workflows/ci-test.yml)
 [![PyLint](https://github.com/RobertHue/video2images/actions/workflows/pylint.yml/badge.svg?branch=master)](https://github.com/RobertHue/video2images/actions/workflows/pylint.yml)
