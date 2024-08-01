@@ -42,12 +42,28 @@ The project aims to:
 - [Git](https://git-scm.com/downloads)
 - [VSCode](https://code.visualstudio.com/)
 - [Python](https://www.python.org/)
+- [Poetry](https://python-poetry.org/)
 
-Then, install the required packages by running:
+To install Poetry, follow these steps:
 
-  ```console
-  pip install -r requirements.txt
-  ```
+   ```console
+   python -m pip install --upgrade pip
+   python -m pip install --user pipx
+   python -m pipx ensurepath
+   pipx install poetry
+   ```
+
+To install the project dependencies, execute the following command:
+
+   ```console
+   poetry install
+   ```
+
+To activate the virtual environment, run:
+
+   ```console
+   poetry shell
+   ```
 
 ### Usage
 
