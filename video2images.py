@@ -8,9 +8,8 @@ import cv2
 
 # own libraries
 from pipeline import clear_directory
-from pipeline import compute_overlap
 from pipeline import get_laplacian_variance
-
+from pipeline import get_feature_match_ratio
 
 # Basic configuration for the root logger
 logging.basicConfig(
@@ -25,15 +24,15 @@ logging.basicConfig(
 
 # Define default values
 DEFAULT_FORMAT = "png"
-DEFAULT_BLUR_THRESHOLD = 50.0
-DEFAULT_OVERLAP_THRESHOLD = 0.95
+DEFAULT_BLUR_MIN_THRESHOLD = 20.0
+DEFAULT_FEATURE_MAX_THRESHOLD = 0.10
 
 
 def extract_frames(
     video_path,
     format=DEFAULT_FORMAT,
-    blur_threshold=DEFAULT_BLUR_THRESHOLD,
-    overlap_threshold=DEFAULT_OVERLAP_THRESHOLD,
+    blur_min_threshold=DEFAULT_BLUR_MIN_THRESHOLD,
+    feature_max_threshold=DEFAULT_FEATURE_MAX_THRESHOLD,
 ):
     """
     Extracts and saves frames from a video file after performing quality checks.
@@ -42,10 +41,10 @@ def extract_frames(
         video_path (str): Path to the video file.
         format (str, optional): Format to save the extracted frames (default is
             {DEFAULT_FORMAT}).
-        blur_threshold (float, optional): Minimum variance of the Laplacian to
-            consider a frame sharp (default is {DEFAULT_BLUR_THRESHOLD}).
-        overlap_threshold (float, optional): Minimum geometric overlap required
-            between consecutive frames (default is {DEFAULT_OVERLAP_THRESHOLD}).
+        blur_min_threshold (float, optional): Minimum variance of the Laplacian to
+            consider a frame sharp (default is {DEFAULT_BLUR_MIN_THRESHOLD}).
+        feature_max_threshold (float, optional): Maximum feature treshold until
+            frames are filtered out (default is {DEFAULT_FEATURE_MAX_THRESHOLD}).
 
     Returns:
         None
@@ -79,28 +78,28 @@ def extract_frames(
                 break
             count += 1
 
-            # i. Blurriness Check: Filters out frames that are too blurry
+            # # i. Blurriness Check: Filters out frames that are too blurry
             blur = get_laplacian_variance(frame)
-            if blur >= blur_threshold:
+            if blur < blur_min_threshold:
                 logging.warning(
                     f"Frame {count} is not sharp; hence too blurry. "
-                    f"Should be at least {blur_threshold} but is {blur}."
+                    f"Should be at least {blur_min_threshold} but is {blur}."
                     f"Skipping..."
                 )
                 continue
 
-            # ii. Overlap Check: Filters out consecutive frames that do not meet
-            #                    the required geometric overlap
+            # ii. Feature Check: Filters out frame that does not have too many
+            #                    features in common with its previous frame
             if (
                 prev_frame is not None
             ):  # start frame does not have anything to compare against
-                overlap = compute_overlap(prev_frame, frame)
-                if overlap >= overlap_threshold:
+                feature_ratio = get_feature_match_ratio(prev_frame, frame)
+                if feature_ratio > feature_max_threshold:
                     logging.warning(
-                        f"Frame {count} is not overlapping enough with "
-                        f"its previous frame."
-                        f"Should be at least {overlap_threshold*100}% "
-                        f"of geometric overlap but is {overlap*100}%. "
+                        f"Frame {count} does have too many features in common "
+                        f"with its previous frame."
+                        f"Should be at most {feature_max_threshold*100}% "
+                        f"of feature match ratio but is {feature_ratio*100}%. "
                         f"Skipping..."
                     )
                     continue
@@ -138,26 +137,26 @@ def main():
         help=f"Format to save the extracted frames (default: {DEFAULT_FORMAT})",
     )
     parser.add_argument(
-        "--blur_threshold",
+        "--blur_min_threshold",
         type=float,
-        default=DEFAULT_BLUR_THRESHOLD,
-        help=f"Minimum variance of the Laplacian to consider a frame sharp "
-        f"(default: {DEFAULT_BLUR_THRESHOLD})",
+        default=DEFAULT_BLUR_MIN_THRESHOLD,
+        help=f"Minimum blur threshold till which frames are kept "
+        f"(default: {DEFAULT_BLUR_MIN_THRESHOLD})",
     )
     parser.add_argument(
-        "--overlap_threshold",
+        "--feature_max_threshold",
         type=float,
-        default=DEFAULT_OVERLAP_THRESHOLD,
-        help=f"Minimum geometric overlap required between consecutive frames "
-        f"(default: {DEFAULT_OVERLAP_THRESHOLD})",
+        default=DEFAULT_FEATURE_MAX_THRESHOLD,
+        help=f"Maximum feature threshold up until frames are kept "
+        f"(default: {DEFAULT_FEATURE_MAX_THRESHOLD})",
     )
     args = parser.parse_args()
 
     extract_frames(
         video_path=args.video_path,
         format=args.format,
-        blur_threshold=args.blur_threshold,
-        overlap_threshold=args.overlap_threshold,
+        blur_min_threshold=args.blur_min_threshold,
+        feature_max_threshold=args.feature_max_threshold,
     )
 
 

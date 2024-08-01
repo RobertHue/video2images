@@ -23,7 +23,6 @@ The project aims to:
 - **Minimize the number of input images** by selecting the best frames while maintaining a consistent amount of overlap between them
 - **Ensure the least blurry frames** are used
 
-
 ## Table of Contents
 
 - [video2images](#video2images)
@@ -90,13 +89,13 @@ The pipeline operates as follows:
 1. **Create an Output Directory**: Sets up a directory to store the extracted frames.
 2. **Open the Video File**: Loads the video and retrieves its properties, such as FPS (frames per second) and the total number of frames.
 3. **Iterate Through Frames**: Processes each frame with the following quality checks:
-   1. **Blurriness Check**: Filters out frames that are too blurry based on the blur_threshold.
-   2. **Overlap Check**: Filters out consecutive frames that do not meet the required geometric overlap based on the overlap_threshold.
+   1. **Blurriness Check**: Filters out frames that are too blurry based on the `blur_threshold`.
+   2. **Feature Check**: Feature Check: Filters out frame that does not have too many features in common with its previous frame based on `feature_threshold`.
 4. **Save Valid Frames**: Saves the frames that pass the quality checks to the output directory.
 
 ## Acknowledgments
 
-We would like to express our gratitude to the following resources:
+Special thanks to the following resources for their contributions:
 
 - [Adrian Rosebrock's Tutorial](https://pyimagesearch.com/2015/09/07/blur-detection-with-opencv/) for providing valuable insights on detecting and debugging blur in frames.
 - [AzureDVBB](https://gist.github.com/AzureDVBB/) for demonstrating an alternative approach to filtering frames from a video. For additional context, see the related article, [Photogrammetry Datasets from Video - A Slightly Less Naive Approach](https://gist.github.com/AzureDVBB/49f5240faedc421e7c3939567eaddb59).
