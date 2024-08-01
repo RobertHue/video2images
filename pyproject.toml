@@ -30,7 +30,7 @@ build-backend = "poetry.core.masonry.api"
 ################################################################################
 # formatter (here: black)
 [tool.black]
-target-version = ["py38", "py39", "py310", "py311"]
+target-version = ["py312"]
 line-length = 80
 include = "*.py"
 exclude = '''
@@ -123,7 +123,7 @@ exclude = ["examples"]
 # LINTER (here: RUFF)
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py312"
 select = ["F", "E"]
 # Exclude certain rules that might not be applicable or too strict for bpy
 ignore = [
