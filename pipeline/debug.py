@@ -2,12 +2,25 @@
 import logging
 
 # 3rd-Party
-import cv2 # opencv-python for frame reading
-import matplotlib.pyplot as plt # pretty charts no?
-import numpy as np # yep
+import cv2
+import matplotlib.pyplot as plt
 
 
 def debug_matches(gray1, gray2, kp1, kp2, matches, good_matches):
+    """
+    Debug and visualize keypoint matches between two images.
+
+    Args:
+        gray1 (numpy.ndarray): The first image in grayscale.
+        gray2 (numpy.ndarray): The second image in grayscale.
+        kp1 (list of cv2.KeyPoint): Keypoints from the first image.
+        kp2 (list of cv2.KeyPoint): Keypoints from the second image.
+        matches (list of cv2.DMatch): All matches between keypoints.
+        good_matches (list of cv2.DMatch): Good matches that passed quality checks.
+
+    Returns:
+        None
+    """
     logging.info(f"{len(good_matches)=}")
     logging.info(f"{len(kp1)=}")
     # Sort them in the order of their distance.
