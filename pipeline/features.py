@@ -54,6 +54,8 @@ def get_feature_match_ratio(image1, image2, good_match_distance=30.0):
     Returns:
         float: The match ratio of the two images.
     """
+    DO_NOT_MATCH = 0.0  # used for when the frames do not match or in error cases
+
     # Convert images to grayscale
     gray1 = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
     gray2 = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
@@ -71,7 +73,7 @@ def get_feature_match_ratio(image1, image2, good_match_distance=30.0):
     # Handle cases where descriptors are None
     if des1 is None or des2 is None:
         logging.error("One of the images lacks distinct features or details.")
-        return False
+        return DO_NOT_MATCH
 
     # Match descriptors
     matches = bf.match(des1, des2)
@@ -81,7 +83,7 @@ def get_feature_match_ratio(image1, image2, good_match_distance=30.0):
 
     # Avoid division by zero
     if len(kp1) == 0:
-        return False
+        return DO_NOT_MATCH
 
     # Calculate match ratio
     match_ratio = len(good_matches) / len(kp1)
