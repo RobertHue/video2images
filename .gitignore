@@ -4,6 +4,9 @@
 *.mp4
 extracted_frames/
 
+# ignore poetry lock due to possible issues with it
+poetry.lock
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

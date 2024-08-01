@@ -1,9 +1,0 @@
-###### Requirements without Version Specifiers ######
-opencv-python
-scikit-image
-dask
-numpy
-matplotlib
-numba
-
-###### Requirements with Version Specifiers ######
