@@ -16,23 +16,26 @@ from pipeline import get_laplacian_variance
 # Basic configuration for the root logger
 logging.basicConfig(
     level=logging.INFO,  # Set default level for root logger
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler('logging.log', mode='w'),  # File handler
-        logging.StreamHandler()  # Console handler
-    ]
+        logging.FileHandler("logging.log", mode="w"),  # File handler
+        logging.StreamHandler(),  # Console handler
+    ],
 )
 
 
 # Define default values
-DEFAULT_FORMAT = 'png'
+DEFAULT_FORMAT = "png"
 DEFAULT_BLUR_THRESHOLD = 50.0
 DEFAULT_OVERLAP_THRESHOLD = 0.95
 
 
-def extract_frames(video_path, format=DEFAULT_FORMAT,
-                   blur_threshold=DEFAULT_BLUR_THRESHOLD,
-                   overlap_threshold=DEFAULT_OVERLAP_THRESHOLD):
+def extract_frames(
+    video_path,
+    format=DEFAULT_FORMAT,
+    blur_threshold=DEFAULT_BLUR_THRESHOLD,
+    overlap_threshold=DEFAULT_OVERLAP_THRESHOLD,
+):
     """
     Extracts and saves frames from a video file after performing quality checks.
 
@@ -51,8 +54,7 @@ def extract_frames(video_path, format=DEFAULT_FORMAT,
     # 1. Create an Output Directory: Sets up a directory to store the extracted frames.
     path_obj = Path(video_path)
     directory_path = path_obj.parent
-    video_file_name = path_obj.stem
-    output_directory = directory_path / Path(f"extracted_frames")
+    output_directory = directory_path / Path("extracted_frames")
     clear_directory(output_directory)
     output_directory.mkdir(parents=True, exist_ok=True)
 
@@ -80,28 +82,36 @@ def extract_frames(video_path, format=DEFAULT_FORMAT,
 
             # 3.1 Blurriness Check: Filters out frames that are too blurry
             blur = get_laplacian_variance(frame)
-            if (blur >= blur_threshold):
-                logging.warning(f"Frame {count} is not sharp; hence too blurry. "
-                                f"Should be at least {blur_threshold} but is {blur}."
-                                f"Skipping...")
+            if blur >= blur_threshold:
+                logging.warning(
+                    f"Frame {count} is not sharp; hence too blurry. "
+                    f"Should be at least {blur_threshold} but is {blur}."
+                    f"Skipping..."
+                )
                 continue
 
             # 3.2 Overlap Check: Filters out consecutive frames that do not meet
             #                    the required geometric overlap
-            if (prev_frame is not None):  # start frame does not have anything to compare against
+            if (
+                prev_frame is not None
+            ):  # start frame does not have anything to compare against
                 overlap = compute_overlap(prev_frame, frame)
-                if (overlap >= overlap_threshold):
-                    logging.warning(f"Frame {count} is not overlapping enough with "
-                                    f"its previous frame."
-                                    f"Should be at least {overlap_threshold*100}% "
-                                    f"of geometric overlap but is {overlap*100}%. "
-                                    f"Skipping...")
+                if overlap >= overlap_threshold:
+                    logging.warning(
+                        f"Frame {count} is not overlapping enough with "
+                        f"its previous frame."
+                        f"Should be at least {overlap_threshold*100}% "
+                        f"of geometric overlap but is {overlap*100}%. "
+                        f"Skipping..."
+                    )
                     continue
 
             # 4. Save valid frame as image
             output_file = output_directory / f"frame_{count:04d}.{format}"
             cv2.imwrite(str(output_file), frame)
-            logging.info(f"Frame {count} has been extracted and saved as {output_file.name}")
+            logging.info(
+                f"Frame {count} has been extracted and saved as {output_file.name}"
+            )
 
             # advance
             prev_frame = frame
@@ -109,6 +119,7 @@ def extract_frames(video_path, format=DEFAULT_FORMAT,
         cap.release()
         cv2.destroyAllWindows()
         logging.info(f"Total frames extracted: {count}")
+
 
 ################################################################################
 
@@ -120,22 +131,26 @@ def main():
     parser = argparse.ArgumentParser(
         description="Extract frames from a video file with quality checks."
     )
+    parser.add_argument("video_path", type=str, help="Path to the video file")
     parser.add_argument(
-        "video_path", type=str, help="Path to the video file"
+        "--format",
+        type=str,
+        default=DEFAULT_FORMAT,
+        help=f"Format to save the extracted frames (default: {DEFAULT_FORMAT})",
     )
     parser.add_argument(
-        "--format", type=str, default=DEFAULT_FORMAT,
-        help=f"Format to save the extracted frames (default: {DEFAULT_FORMAT})"
-    )
-    parser.add_argument(
-        "--blur_threshold", type=float, default=DEFAULT_BLUR_THRESHOLD,
+        "--blur_threshold",
+        type=float,
+        default=DEFAULT_BLUR_THRESHOLD,
         help=f"Minimum variance of the Laplacian to consider a frame sharp "
-             f"(default: {DEFAULT_BLUR_THRESHOLD})"
+        f"(default: {DEFAULT_BLUR_THRESHOLD})",
     )
     parser.add_argument(
-        "--overlap_threshold", type=float, default=DEFAULT_OVERLAP_THRESHOLD,
+        "--overlap_threshold",
+        type=float,
+        default=DEFAULT_OVERLAP_THRESHOLD,
         help=f"Minimum geometric overlap required between consecutive frames "
-             f"(default: {DEFAULT_OVERLAP_THRESHOLD})"
+        f"(default: {DEFAULT_OVERLAP_THRESHOLD})",
     )
     args = parser.parse_args()
 
@@ -143,7 +158,7 @@ def main():
         video_path=args.video_path,
         format=args.format,
         blur_threshold=args.blur_threshold,
-        overlap_threshold=args.overlap_threshold
+        overlap_threshold=args.overlap_threshold,
     )
 
 

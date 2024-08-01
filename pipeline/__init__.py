@@ -10,5 +10,11 @@ from .filesystem import clear_directory
 
 
 # Expose the most commonly used components in the package's namespace
-__all__ = ["debug_matches", "get_laplacian_variance", "is_well_exposed",
-           "get_feature_match_ratio", "compute_overlap", "clear_directory"]
+__all__ = [
+    "debug_matches",
+    "get_laplacian_variance",
+    "is_well_exposed",
+    "get_feature_match_ratio",
+    "compute_overlap",
+    "clear_directory",
+]
