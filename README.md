@@ -2,8 +2,8 @@
 
 ![Python](https://img.shields.io/badge/python-3.10+-blue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build](https://github.com/RobertHue/video2images/actions/workflows/ci-test.yml/badge.svg?branch=master)](https://github.com/RobertHue/video2images/actions/workflows/ci-test.yml)
-[![Build](https://github.com/RobertHue/video2images/actions/workflows/pylint.yml/badge.svg?branch=master)](https://github.com/RobertHue/video2images/actions/workflows/pylint.yml)
+[![Tests](https://github.com/RobertHue/video2images/actions/workflows/ci-test.yml/badge.svg?branch=master)](https://github.com/RobertHue/video2images/actions/workflows/ci-test.yml)
+[![PyLint](https://github.com/RobertHue/video2images/actions/workflows/pylint.yml/badge.svg?branch=master)](https://github.com/RobertHue/video2images/actions/workflows/pylint.yml)
 
 Converts a video into images filtered for [Photogrammetry](https://en.wikipedia.org/wiki/Photogrammetry), such as in [Meshroom](https://github.com/alicevision/Meshroom).
 
