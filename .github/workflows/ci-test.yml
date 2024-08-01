@@ -49,8 +49,7 @@ jobs:
         poetry install
     - name: Testing
       run: |
-        poetry run python -m pytest --cov=src tests
-        poetry run python -m codecov
+        poetry run python -m pytest tests
 
   build-macos:
     runs-on: macos-latest
