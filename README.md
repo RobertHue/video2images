@@ -1,5 +1,10 @@
 # video2images
 
+![Python](https://img.shields.io/badge/python-3.10+-blue)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build](https://github.com/RobertHue/video2images/actions/workflows/ci-test.yml/badge.svg?branch=master)](https://github.com/RobertHue/video2images/actions/workflows/ci-test.yml)
+[![Build](https://github.com/RobertHue/video2images/actions/workflows/pylint.yml/badge.svg?branch=master)](https://github.com/RobertHue/video2images/actions/workflows/pylint.yml)
+
 Converts a video into images filtered for [Photogrammetry](https://en.wikipedia.org/wiki/Photogrammetry), such as in [Meshroom](https://github.com/alicevision/Meshroom).
 
 This project aligns with the goals and motivation outlined in [Photogrammetry Datasets from Video - A Slightly Less Naive Approach](https://gist.github.com/AzureDVBB/49f5240faedc421e7c3939567eaddb59).
@@ -29,7 +34,6 @@ The project aims to:
     - [Usage](#usage)
   - [How It Works](#how-it-works)
   - [Acknowledgments](#acknowledgments)
-  - [License](#license)
 
 ## Getting Started
 
