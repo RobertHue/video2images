@@ -23,7 +23,7 @@
     ],
     // python
     "[python]": {
-        "editor.formatOnSave": false,
+        "editor.formatOnSave": true,
         "editor.defaultFormatter": "ms-python.black-formatter",
     },
     "python.languageServer": "Pylance",
