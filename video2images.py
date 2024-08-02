@@ -11,6 +11,7 @@ from pipeline import clear_directory
 from pipeline import get_feature_match_ratio
 from pipeline import get_laplacian_variance
 
+
 # Basic configuration for the root logger
 logging.basicConfig(
     level=logging.INFO,  # Set default level for root logger
