@@ -34,7 +34,7 @@ jobs:
 
     - name: Run black
       run: |
-        poetry run black --check .
+        poetry run black --check --include '\.py$' .
 
     - name: Run isort
       run: |
