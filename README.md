@@ -71,12 +71,13 @@ The process is based on a simple, pipeline-oriented approach. No multiprocessing
 
 The pipeline operates as follows:
 
-1. **Create an Output Directory**: Sets up a directory to store the extracted frames.
-2. **Open the Video File**: Loads the video and retrieves its properties, such as FPS (frames per second) and the total number of frames.
-3. **Iterate Through Frames**: Processes each frame with the following quality checks:
+1. **Create an output directory or clear if already existant**
+2. **Open the video file and retrieve needed properties**
+3. Processes each frame with the following quality checks:
    1. **Blurriness Check**: Filters out frames that are too blurry based on the `blur_min_threshold`.
-   2. **Feature Check**: Feature Check: Filters out frame that does not have too many features in common with its previous frame based on `feature_max_threshold`.
+   2. **Feature Check**: Filters out frame that does have too many features in common with its previous frame based on `feature_max_threshold`.
 4. **Save Valid Frames**: Saves the frames that pass the quality checks to the output directory.
+5. **Cleanup & Print Stats**
 
 ## Acknowledgments
 

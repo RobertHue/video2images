@@ -52,15 +52,14 @@ def extract_frames(
     Returns:
         None
     """
-    # 1. Create an Output Directory: Sets up a directory to store the extracted frames.
+    # 1. Create an output directory or clear if already existant
     path_obj = Path(video_path)
     directory_path = path_obj.parent
     output_directory = directory_path / Path("extracted_frames")
     clear_directory(output_directory)
     output_directory.mkdir(parents=True, exist_ok=True)
 
-    # 2. Open the Video File: Loads the video and retrieves its properties,
-    #                         for further processing.
+    # 2. Open the video file and retrieve needed properties
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
         logging.error(f"Error: Unable to open video file {video_path}")
@@ -70,10 +69,12 @@ def extract_frames(
     logging.info(f"FPS of video: {fps}")
     logging.info(f"Frame count of video: {frame_count}")
 
-    # 3. Iterate through frames
+    # 3. Processes each frame with the following quality checks:
     count = 0
+    blur_count = 0
+    common_feature_count = 0
+    extracted_count = 0
     prev_frame = None
-
     try:
         while cap.isOpened():
             ret, frame = cap.read()
@@ -89,9 +90,10 @@ def extract_frames(
                     f"Should be at least {blur_min_threshold} but is {blur}."
                     f"Skipping..."
                 )
+                blur_count += 1
                 continue
 
-            # ii. Feature Check: Filters out frame that does not have too many
+            # ii. Feature Check: Filters out frame that does have too many
             #                    features in common with its previous frame
             if (
                 prev_frame is not None
@@ -105,21 +107,30 @@ def extract_frames(
                         f"of feature match ratio but is {feature_ratio*100}%. "
                         f"Skipping..."
                     )
+                    common_feature_count += 1
                     continue
 
-            # 4. Save valid frame as image
+            # 4. Save Valid Frames
             output_file = output_directory / f"frame_{count:04d}.{image_format}"
             cv2.imwrite(str(output_file), frame)
             logging.info(
                 f"Frame {count} has been extracted and saved as {output_file.name}"
             )
+            extracted_count += 1
 
-            # advance
+            # Advance
             prev_frame = frame
     finally:
+        # 5. Cleanup & Print Stats
         cap.release()
         cv2.destroyAllWindows()
+        logging.info("#" * 32)
         logging.info(f"Total frames extracted: {count}")
+        logging.info(f"Extracted frames: {extracted_count}")
+        logging.info(f"Filtered frames with below {blur_min_threshold} "
+                     f"blur: {blur_count}")
+        logging.info(f"Filtered frames with {feature_max_threshold*100}% "
+                     f"common features: {common_feature_count}")
 
 
 ################################################################################
@@ -143,14 +154,14 @@ def main():
         "--blur_min_threshold",
         type=float,
         default=DEFAULT_BLUR_MIN_THRESHOLD,
-        help=f"Minimum blur threshold till which frames are kept "
+        help=f"Minimum blur threshold below which frames are discarded "
         f"(default: {DEFAULT_BLUR_MIN_THRESHOLD})",
     )
     parser.add_argument(
         "--feature_max_threshold",
         type=float,
         default=DEFAULT_FEATURE_MAX_THRESHOLD,
-        help=f"Maximum feature threshold up until frames are kept "
+        help=f"Maximum feature threshold above which frames are discarded "
         f"(default: {DEFAULT_FEATURE_MAX_THRESHOLD})",
     )
     args = parser.parse_args()
