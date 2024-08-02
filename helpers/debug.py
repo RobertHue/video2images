@@ -47,7 +47,6 @@ def debug_matches(gray1, gray2, kp1, kp2, matches, good_matches):
         flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS,
     )
 
-
     fig, (ax1, ax2) = plt.subplots(2, 1)
     plt.title("Are frames overlapping by at least 60%")
 

@@ -23,6 +23,7 @@ def test_dir(tmp_path):
     (d / "subdir" / "file2.txt").write_text("content")
     return d
 
+
 def test_clear_directory(test_dir):
     """
     Test the clear_directory function.
@@ -33,4 +34,6 @@ def test_clear_directory(test_dir):
     :param test_dir: The temporary directory created by the test_dir fixture.
     """
     clear_directory(test_dir)
-    assert not any(test_dir.iterdir()), "Directory should be empty after clearing"
+    assert not any(
+        test_dir.iterdir()
+    ), "Directory should be empty after clearing"

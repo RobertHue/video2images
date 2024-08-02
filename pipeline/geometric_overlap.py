@@ -111,7 +111,9 @@ def estimate_geometric_overlap(image1, image2):
     kp2, des2 = detect_and_compute_features(image2)
 
     if des1 is None or des2 is None:
-        raise ValueError("One of the images lacks distinct features or details.")
+        raise ValueError(
+            "One of the images lacks distinct features or details."
+        )
 
     matches = match_descriptors(des1, des2)
 
