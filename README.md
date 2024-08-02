@@ -5,28 +5,13 @@
 [![Tests](https://github.com/RobertHue/video2images/actions/workflows/ci-test.yml/badge.svg?branch=master)](https://github.com/RobertHue/video2images/actions/workflows/ci-test.yml)
 [![PyLint](https://github.com/RobertHue/video2images/actions/workflows/pylint.yml/badge.svg?branch=master)](https://github.com/RobertHue/video2images/actions/workflows/pylint.yml)
 
-Converts a video into images filtered for [Photogrammetry](https://en.wikipedia.org/wiki/Photogrammetry), such as in [Meshroom](https://github.com/alicevision/Meshroom).
+Converts a video into images filtered for [Photogrammetry](https://en.wikipedia.org/wiki/Photogrammetry).
 
-This project aligns with the goals and motivation outlined in [Photogrammetry Datasets from Video - A Slightly Less Naive Approach](https://gist.github.com/AzureDVBB/49f5240faedc421e7c3939567eaddb59).
-
-## Goal of This Project
-
-Provide an easy-to-use collection of scripts to:
-
-- Ingest video files
-- Analyze them for optimal frames
-- Save those frames as a sequence of image files suitable for mainstream photogrammetry software
-
-The project aims to:
-
-- **Reduce on-site time** needed for data capture
-- **Minimize the number of input images** by selecting the best frames while maintaining a consistent amount of overlap between them
-- **Ensure the least blurry frames** are used
+It's main goal is to reduce the on-site time needed for data capture and also the time for Photogrammetry software such as [Meshroom](https://github.com/alicevision/Meshroom) to compute by only having a small selection of frames from a video data capture. This tool does so by currently filters out the frames that are too blurry to be used and consecutive frames that have too many features in common.
 
 ## Table of Contents
 
 - [video2images](#video2images)
-  - [Goal of This Project](#goal-of-this-project)
   - [Table of Contents](#table-of-contents)
   - [Getting Started](#getting-started)
     - [Installation Prerequisites](#installation-prerequisites)
@@ -89,8 +74,8 @@ The pipeline operates as follows:
 1. **Create an Output Directory**: Sets up a directory to store the extracted frames.
 2. **Open the Video File**: Loads the video and retrieves its properties, such as FPS (frames per second) and the total number of frames.
 3. **Iterate Through Frames**: Processes each frame with the following quality checks:
-   1. **Blurriness Check**: Filters out frames that are too blurry based on the `blur_threshold`.
-   2. **Feature Check**: Feature Check: Filters out frame that does not have too many features in common with its previous frame based on `feature_threshold`.
+   1. **Blurriness Check**: Filters out frames that are too blurry based on the `blur_min_threshold`.
+   2. **Feature Check**: Feature Check: Filters out frame that does not have too many features in common with its previous frame based on `feature_max_threshold`.
 4. **Save Valid Frames**: Saves the frames that pass the quality checks to the output directory.
 
 ## Acknowledgments
