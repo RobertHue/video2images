@@ -52,7 +52,7 @@ def extract_frames(
     Returns:
         None
     """
-    # 1. Create an output directory or clear if already existant
+    # 1. Create an output directory or clear if already existent
     path_obj = Path(video_path)
     directory_path = path_obj.parent
     output_directory = directory_path / Path("extracted_frames")
@@ -93,7 +93,7 @@ def extract_frames(
                 blur_count += 1
                 continue
 
-            # ii. Feature Check: Filters out frame that does have too many
+            # ii. Feature Check: Filters out frames that do have too many
             #                    features in common with its previous frame
             if (
                 prev_frame is not None
