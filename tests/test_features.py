@@ -15,7 +15,9 @@ def test_get_laplacian_variance():
     image = np.random.randint(0, 256, (100, 100, 3), dtype=np.uint8)
     laplacian_var = get_laplacian_variance(image)
 
-    assert isinstance(laplacian_var, float), "Laplacian variance should be a float"
+    assert isinstance(
+        laplacian_var, float
+    ), "Laplacian variance should be a float"
     assert laplacian_var >= 0, "Laplacian variance should be non-negative"
 
 
@@ -30,7 +32,9 @@ def test_is_well_exposed():
     well_exposed = is_well_exposed(image)
     print(type(well_exposed))
 
-    assert isinstance(well_exposed, (bool, np.bool_)), "Well-exposed check should return a boolean"
+    assert isinstance(
+        well_exposed, (bool, np.bool_)
+    ), "Well-exposed check should return a boolean"
 
 
 def test_get_feature_match_ratio():
@@ -44,8 +48,12 @@ def test_get_feature_match_ratio():
     image2 = np.random.randint(0, 256, (100, 100, 3), dtype=np.uint8)
     match_ratio = get_feature_match_ratio(image1, image2)
 
-    assert isinstance(match_ratio, float), "Feature match ratio should be a float"
-    assert 0 <= match_ratio <= 1, "Feature match ratio should be between 0 and 1"
+    assert isinstance(
+        match_ratio, float
+    ), "Feature match ratio should be a float"
+    assert (
+        0 <= match_ratio <= 1
+    ), "Feature match ratio should be between 0 and 1"
 
     # Additional value check
     if match_ratio == 0:

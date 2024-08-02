@@ -33,8 +33,10 @@ def main():
     # construct the argument parse and parse the arguments
     ap = argparse.ArgumentParser()
     ap.add_argument(
-        "-i", "--images",
-        required=True, help="path to input directory of images"
+        "-i",
+        "--images",
+        required=True,
+        help="path to input directory of images",
     )
     ap.add_argument(
         "-t",

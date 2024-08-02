@@ -1,4 +1,5 @@
 """Main Application video2images.py"""
+
 # Python Module Index
 import argparse
 import logging

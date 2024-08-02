@@ -18,7 +18,9 @@ def test_detect_and_compute_features():
     image = np.zeros((100, 100, 3), dtype=np.uint8)
     keypoints, descriptors = detect_and_compute_features(image)
     assert isinstance(keypoints, tuple)  # keypoints should be a tuple
-    assert descriptors is None or isinstance(descriptors, np.ndarray)  # descriptors can be None or a numpy array
+    assert descriptors is None or isinstance(
+        descriptors, np.ndarray
+    )  # descriptors can be None or a numpy array
 
 
 def test_match_descriptors():
@@ -28,8 +30,12 @@ def test_match_descriptors():
     des1 = np.random.randint(0, 256, (10, 32), dtype=np.uint8)
     des2 = np.random.randint(0, 256, (10, 32), dtype=np.uint8)
     matches = match_descriptors(des1, des2)
-    assert isinstance(matches, tuple)  # matches should be a tuple of cv2.DMatch objects
-    assert all(isinstance(m, cv2.DMatch) for m in matches)  # all elements in matches should be cv2.DMatch objects
+    assert isinstance(
+        matches, tuple
+    )  # matches should be a tuple of cv2.DMatch objects
+    assert all(
+        isinstance(m, cv2.DMatch) for m in matches
+    )  # all elements in matches should be cv2.DMatch objects
 
 
 def test_estimate_homography():
