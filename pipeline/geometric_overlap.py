@@ -14,7 +14,7 @@ def detect_and_compute_features(image):
 
     Returns:
         Tuple: A tuple containing:
-            - keypoints (list of cv2.KeyPoint): Detected keypoints.
+            - keypoints (tuple of cv2.KeyPoint): Detected keypoints.
             - descriptors (numpy.ndarray): Computed descriptors.
     """
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -32,7 +32,7 @@ def match_descriptors(des1, des2):
         des2 (numpy.ndarray): Descriptors of the second image.
 
     Returns:
-        list: List of matches between the descriptors.
+        tuple: tuple of matches between the descriptors.
     """
     bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
     matches = bf.match(des1, des2)
@@ -50,23 +50,23 @@ def estimate_homography(src_pts, dst_pts):
     Returns:
         numpy.ndarray or None: Homography matrix if estimation is successful; otherwise, None.
     """
-    H_Matrix, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC)
-    return H_Matrix
+    H, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC)
+    return H
 
 
-def warp_image(image, H_Matrix, shape):
+def warp_image(image, H, shape):
     """
     Warp the image using a homography matrix.
 
     Args:
         image (numpy.ndarray): Input image in BGR format.
-        H_Matrix (numpy.ndarray): Homography matrix.
+        H (numpy.ndarray): Homography matrix.
         shape (tuple): Shape of the target image.
 
     Returns:
         numpy.ndarray: Warped image.
     """
-    warped_image = cv2.warpPerspective(image, H_Matrix, (shape[1], shape[0]))
+    warped_image = cv2.warpPerspective(image, H, (shape[1], shape[0]))
     return warped_image
 
 
@@ -119,12 +119,12 @@ def estimate_geometric_overlap(image1, image2):
     src_pts = np.float32([kp1[m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
     dst_pts = np.float32([kp2[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
 
-    H_Matrix = estimate_homography(src_pts, dst_pts)
+    H = estimate_homography(src_pts, dst_pts)
 
-    if H_Matrix is None:
+    if H is None:
         raise ValueError("Homography estimation failed.")
 
-    warped_image1 = warp_image(image1, H_Matrix, image2.shape)
+    warped_image1 = warp_image(image1, H, image2.shape)
     overlap_fraction = compute_overlap(image2, warped_image1)
 
     return overlap_fraction
