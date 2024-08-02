@@ -2,8 +2,8 @@
 
 ![Python](https://img.shields.io/badge/python-3.12+-blue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![ci-tests](https://github.com/RobertHue/video2images/actions/workflows/ci-tests.yml/badge.svg?branch=master)](https://github.com/RobertHue/video2images/actions/workflows/ci-tests.yml)
-[![ci-linting](https://github.com/RobertHue/video2images/actions/workflows/ci-linting.yml/badge.svg?branch=master)](https://github.com/RobertHue/video2images/actions/workflows/ci-linting.yml)
+[![ci-tests](https://github.com/RobertHue/video2images/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/RobertHue/video2images/actions/workflows/ci-tests.yml)
+[![ci-linting](https://github.com/RobertHue/video2images/actions/workflows/ci-linting.yml/badge.svg)](https://github.com/RobertHue/video2images/actions/workflows/ci-linting.yml)
 
 Converts a video into images filtered for [Photogrammetry](https://en.wikipedia.org/wiki/Photogrammetry).
 
