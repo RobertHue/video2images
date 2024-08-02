@@ -7,7 +7,7 @@
 
 Converts a video into images filtered for [Photogrammetry](https://en.wikipedia.org/wiki/Photogrammetry).
 
-It's main goal is to reduce the on-site time needed for data capture and also the time for Photogrammetry software such as [Meshroom](https://github.com/alicevision/Meshroom) to compute by only having a small selection of frames from a video data capture. This tool does so by currently filters out the frames that are too blurry to be used and consecutive frames that have too many features in common.
+Its main goal is to reduce the on-site time needed for data capture and also the time for photogrammetry software, such as [Meshroom](https://github.com/alicevision/Meshroom), to compute by only using a small selection of frames from a video data capture. This tool filters out frames that are too blurry to be used and consecutive frames that have too many features in common.
 
 ## Table of Contents
 
