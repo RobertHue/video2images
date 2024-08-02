@@ -127,10 +127,14 @@ def extract_frames(
         logging.info("#" * 32)
         logging.info(f"Total frames extracted: {count}")
         logging.info(f"Extracted frames: {extracted_count}")
-        logging.info(f"Filtered frames with below {blur_min_threshold} "
-                     f"blur: {blur_count}")
-        logging.info(f"Filtered frames with {feature_max_threshold*100}% "
-                     f"common features: {common_feature_count}")
+        logging.info(
+            f"Filtered frames with below {blur_min_threshold} "
+            f"blur: {blur_count}"
+        )
+        logging.info(
+            f"Filtered frames with {feature_max_threshold*100}% "
+            f"common features: {common_feature_count}"
+        )
 
 
 ################################################################################
