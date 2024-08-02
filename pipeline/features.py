@@ -29,8 +29,10 @@ def is_well_exposed(image, low_threshold=0.1, high_threshold=0.9):
 
     Args:
         image (numpy.ndarray): Input image in BGR format.
-        low_threshold (float, optional): Lower bound for cumulative distribution function (default: 0.1).
-        high_threshold (float, optional): Upper bound for cumulative distribution function (default: 0.9).
+        low_threshold (float, optional): Lower bound for cumulative
+            distribution function (default: 0.1).
+        high_threshold (float, optional): Upper bound for cumulative
+            distribution function (default: 0.9).
 
     Returns:
         bool: True if the image is well-exposed, False otherwise.

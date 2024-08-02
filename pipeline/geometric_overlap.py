@@ -115,9 +115,15 @@ def estimate_geometric_overlap(image1, image2):
 
     matches = match_descriptors(des1, des2)
 
-    # Extract matched keypoints
-    src_pts = np.float32([kp1[m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
-    dst_pts = np.float32([kp2[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
+    # Extract keypoints from matches for src and dst points
+    src_pts_list = [kp1[m.queryIdx].pt for m in matches]
+    dst_pts_list = [kp2[m.trainIdx].pt for m in matches]
+
+    # Convert keypoints to numpy arrays and reshape
+    if not src_pts_list or not dst_pts_list:
+        raise ValueError("No matches found between images.")
+    src_pts = np.array(src_pts_list, dtype=np.float32).reshape(-1, 1, 2)
+    dst_pts = np.array(dst_pts_list, dtype=np.float32).reshape(-1, 1, 2)
 
     H = estimate_homography(src_pts, dst_pts)
 

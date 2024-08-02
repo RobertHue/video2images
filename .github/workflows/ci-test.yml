@@ -1,5 +1,7 @@
 name: ci-test
 
+# Trigger the workflow on push or pull request,
+# but only for the main branch
 on:
   push:
     branches: [ main, master ]
