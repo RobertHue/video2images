@@ -30,32 +30,33 @@ def debug_matches(gray1, gray2, kp1, kp2, matches, good_matches):
     img_with_keypoints = cv2.drawKeypoints(
         gray1,
         kp1,
-        None,
+        outImage=None,  # Pass `None` if you want OpenCV to create the output image.
         color=(0, 255, 0),
         flags=cv2.DrawMatchesFlags_DRAW_RICH_KEYPOINTS,
     )
     # Convert BGR image to RGB (matplotlib uses RGB)
     img_with_keypoints_rgb = cv2.cvtColor(img_with_keypoints, cv2.COLOR_BGR2RGB)
 
-    img4 = cv2.drawMatches(
+    img_with_matches = cv2.drawMatches(
         gray1,
         kp1,
         gray2,
         kp2,
         good_matches,
-        None,
+        outImg=None,  # Pass `None` if you want OpenCV to create the output image.
         flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS,
     )
+
 
     fig, (ax1, ax2) = plt.subplots(2, 1)
     plt.title("Are frames overlapping by at least 60%")
 
     # Display the images
     ax1.imshow(img_with_keypoints_rgb)
-    ax1.set_title("Image 3")
+    ax1.set_title("Image with Keypoints")
 
-    ax2.imshow(img4)
-    ax2.set_title("Image 4")
+    ax2.imshow(img_with_matches)
+    ax2.set_title("Image with Matches")
 
     plt.figtext(
         0.5,

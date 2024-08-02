@@ -1,0 +1,53 @@
+name: ruff
+
+# Trigger the workflow on push or pull request,
+# but only for the main branch
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  ruff:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --user pipx
+        python -m pipx ensurepath
+        pipx install poetry
+        poetry install
+
+    - name: Spelling check with codespell
+      run: |
+        poetry run codespell --exclude-file=pyproject.toml
+
+    - name: Run black
+      run: |
+        poetry run black --check .
+
+    - name: Run isort
+      run: |
+        poetry run isort . --check-only
+
+    - name: Dynamic Duck-Style checker - MyPy
+      run: |
+        poetry run mypy .
+
+    - name: Linter Check - Ruff
+      run: |
+        poetry run ruff check .
+
+    - name: Static Type Checker - PyRight
+      run: |
+        poetry run pyright .

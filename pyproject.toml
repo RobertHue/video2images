@@ -14,6 +14,7 @@ opencv-python = "^4.10.0.84"
 scikit-image = "^0.24.0"
 numpy = "^2.0.1"
 matplotlib = "^3.9.1"
+imutils = "^0.5.4"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.2"
@@ -22,6 +23,7 @@ black = "^24.4.2"
 ruff = "^0.5.5"
 pyright = "^1.1.374"
 mypy = "^1.11.1"
+codespell = "^2.3.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -46,7 +48,6 @@ exclude = '''
   | build
   | dist
   | __pycache__
-  | tests
 )/
 '''
 
@@ -124,38 +125,40 @@ exclude = ["examples"]
 
 [tool.ruff]
 target-version = "py312"
-select = ["F", "E"]
-# Exclude certain rules that might not be applicable or too strict for bpy
-ignore = [
-    "E501",  # Line too long (override for long lines in comments or docstrings)
-    "F401",  # Module imported but unused (common in bpy scripts)
-    "F841",  # Local variable is assigned to but never used (common in bpy scripts)
+lint.select = [
+  "F", "E"
 ]
-unfixable = []
+# Exclude certain rules that might not be applicable or too strict for bpy
+lint.ignore = [
+    "E501",  # Line too long (override for long lines in comments or docstrings)
+    # "F401",  # Module imported but unused (common in bpy scripts)
+    # "F841",  # Local variable is assigned to but never used (common in bpy scripts)
+]
+lint.unfixable = []
 line-length = 80
 extend-exclude = ["tests"]
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 force-single-line = true
 force-sort-within-sections = false
 lines-after-imports = 2
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 24
-[tool.ruff.pycodestyle]
+[tool.ruff.lint.pycodestyle]
 ignore-overlong-task-comments = true
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
 # Add custom rules or overrides specific to bpy
-[tool.ruff.flake8-annotations]
+[tool.ruff.lint.flake8-annotations]
 allow-star-arg-any = true
 ignore-fully-untyped = true
 
-[tool.ruff.flake8-bugbear]
+[tool.ruff.lint.flake8-bugbear]
 extend-immutable-calls = ["bpy.props"]
 
-[tool.ruff.pylint]
+[tool.ruff.lint.pylint]
 max-branches = 24
 max-returns = 12
 max-statements = 100
@@ -188,3 +191,8 @@ reportOptionalOperand = false
 reportOptionalSubscript = false
 reportPrivateImportUsage = false
 reportUnboundVariable = true
+
+# other fixes
+reportAttributeAccessIssue = false  # ORB_create is not known to cv2
+reportArgumentType = false  # None cannot be assigned to param outImage in drawKeypoints
+reportCallIssue = false  # No overloads for "drawKeypoints" match the provided arguments

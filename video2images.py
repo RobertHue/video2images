@@ -1,3 +1,4 @@
+"""Main Application video2images.py"""
 # Python Module Index
 import argparse
 import logging
@@ -31,7 +32,7 @@ DEFAULT_FEATURE_MAX_THRESHOLD = 0.10
 
 def extract_frames(
     video_path,
-    format=DEFAULT_FORMAT,
+    image_format=DEFAULT_FORMAT,
     blur_min_threshold=DEFAULT_BLUR_MIN_THRESHOLD,
     feature_max_threshold=DEFAULT_FEATURE_MAX_THRESHOLD,
 ):
@@ -40,11 +41,11 @@ def extract_frames(
 
     Args:
         video_path (str): Path to the video file.
-        format (str, optional): Format to save the extracted frames (default is
+        image_format (str, optional): Format to save the extracted frames (default is
             {DEFAULT_FORMAT}).
         blur_min_threshold (float, optional): Minimum variance of the Laplacian to
             consider a frame sharp (default is {DEFAULT_BLUR_MIN_THRESHOLD}).
-        feature_max_threshold (float, optional): Maximum feature treshold until
+        feature_max_threshold (float, optional): Maximum feature threshold until
             frames are filtered out (default is {DEFAULT_FEATURE_MAX_THRESHOLD}).
 
     Returns:
@@ -106,7 +107,7 @@ def extract_frames(
                     continue
 
             # 4. Save valid frame as image
-            output_file = output_directory / f"frame_{count:04d}.{format}"
+            output_file = output_directory / f"frame_{count:04d}.{image_format}"
             cv2.imwrite(str(output_file), frame)
             logging.info(
                 f"Frame {count} has been extracted and saved as {output_file.name}"
@@ -132,7 +133,7 @@ def main():
     )
     parser.add_argument("video_path", type=str, help="Path to the video file")
     parser.add_argument(
-        "--format",
+        "--image_format",
         type=str,
         default=DEFAULT_FORMAT,
         help=f"Format to save the extracted frames (default: {DEFAULT_FORMAT})",
@@ -155,7 +156,7 @@ def main():
 
     extract_frames(
         video_path=args.video_path,
-        format=args.format,
+        image_format=args.image_format,
         blur_min_threshold=args.blur_min_threshold,
         feature_max_threshold=args.feature_max_threshold,
     )
