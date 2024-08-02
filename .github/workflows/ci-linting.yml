@@ -9,7 +9,7 @@ on:
     branches: [ main, master ]
 
 jobs:
-  ruff:
+  ci-linting:
     runs-on: ubuntu-latest
     strategy:
       matrix:
