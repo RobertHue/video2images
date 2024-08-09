@@ -125,10 +125,10 @@ def extract_frames(
         cap.release()
         cv2.destroyAllWindows()
         logging.info("#" * 32)
-        logging.info(f"Total frames extracted: {count}")
+        logging.info(f"Total frames in video: {count}")
         logging.info(f"Extracted frames: {extracted_count}")
         logging.info(
-            f"Filtered frames with below {blur_min_threshold} "
+            f"\nFiltered frames with below {blur_min_threshold} "
             f"blur: {blur_count}"
         )
         logging.info(
