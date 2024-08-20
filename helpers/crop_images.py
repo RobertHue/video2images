@@ -39,11 +39,23 @@ class ImageCropper:
 
                 print(f"Cropped and saved: {filename}")
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Crop images in a directory and save them in a 'cropped' subdirectory.")
-    parser.add_argument("input_dir", type=str, help="Path to the input directory containing images.")
-    parser.add_argument("--crop_box", type=int, nargs=4, default=[100, 100, 400, 400],
-                        help="Properties for the crop box (x, y, width, height).")
+    parser = argparse.ArgumentParser(
+        description="Crop images in a directory and save them in a 'cropped' subdirectory."
+    )
+    parser.add_argument(
+        "input_dir",
+        type=str,
+        help="Path to the input directory containing images.",
+    )
+    parser.add_argument(
+        "--crop_box",
+        type=int,
+        nargs=4,
+        default=[100, 100, 400, 400],
+        help="Properties for the crop box (x, y, width, height).",
+    )
 
     args = parser.parse_args()
 
@@ -52,6 +64,7 @@ def main():
     print(f"{cropper.input_dir=}")
     print(f"{cropper.output_dir=}")
     print(f"{cropper.crop_box=}")
+
 
 if __name__ == "__main__":
     main()
